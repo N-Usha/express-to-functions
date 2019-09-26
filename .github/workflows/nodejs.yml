@@ -18,12 +18,21 @@ jobs:
         npm install
         npm run node-ng:build
         #npm run test --if-present
+    
+    - name: 'Login via Azure CLI'
+      uses: Azure/actions/login@master
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_ACTIONDEMO }}
 
-    - name: 'Run Azure webapp deploy action using publish profile credentials'
-      uses: azure/webapps-deploy@v1
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
       with: 
-        app-name: NodeAppGH # Replace with your app name
-        publish-profile: ${{ secrets.azureWebAppPublishProfile }} # Define secret variable in repository settings as per action documentation
-        #package: '.'  #default value is entire repo
+        app-name: NodeFunctionGH # Replace with your Function app name
+        package: '.'  #default value is entire repo
         # If your function app project is not located in your repository's root
         # Please consider prefixing the project path in this package parameter
+        
+    - name: 'Echo the published functionapp url'
+      run: |
+        echo "${{ steps.fa.outputs.app-url }}"
